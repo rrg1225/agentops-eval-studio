@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+.env.local
+traces/*.json
+!traces/.gitkeep
+npm-debug.log*
+.DS_Store
+Thumbs.db
