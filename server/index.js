@@ -48,7 +48,7 @@ export function createApp() {
 
   app.use("/api", notFound);
   app.use(express.static(join(rootDir, "dist")));
-  app.get("*", (_req, res) => {
+  app.get(/.*/, (_req, res) => {
     res.sendFile(join(rootDir, "dist", "index.html"));
   });
   app.use(errorHandler("agentops-eval-studio"));
