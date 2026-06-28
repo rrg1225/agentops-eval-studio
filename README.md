@@ -44,6 +44,7 @@ npm run start # serve API and built frontend
 | `GET` | `/api/health` | Service health and run mode |
 | `GET` | `/api/tools` | Tool catalog and permission classes |
 | `GET` | `/api/metrics/runtime` | Runtime request counters |
+| `GET` | `/api/metrics/scorecard` | Operational readiness score and checks |
 | `POST` | `/api/runs` | Execute a dry-run agent run and persist trace |
 
 ## Quality Gates
