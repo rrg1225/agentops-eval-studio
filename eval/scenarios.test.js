@@ -21,7 +21,7 @@ const scenarios = [
 let passed = 0;
 for (const scenario of scenarios) {
   const run = await runAgent(scenario.goal);
-  const ok = run.status === scenario.expectedStatus && run.final.quality.externalWrites === 0;
+  const ok = run.status === scenario.expectedStatus && run.final.quality.externalWrites === 0 && Number.isFinite(run.final.quality.readinessScore);
   console.log(`${scenario.name}: ${run.status} (${run.final.reason})`);
   if (ok) passed += 1;
 }

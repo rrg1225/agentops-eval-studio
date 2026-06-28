@@ -5,7 +5,7 @@ import { dirname, join, resolve } from "node:path";
 import { mkdir, writeFile } from "node:fs/promises";
 import { runAgent } from "./agent/loop.js";
 import { toolCatalog } from "./agent/tools.js";
-import { createRuntimeState, installRuntimeControls, runtimeMetrics } from "./runtime.js";
+import { createRuntimeState, installRuntimeControls, operationalScorecard, runtimeMetrics } from "./runtime.js";
 import { asyncRoute, errorHandler, notFound, requireObjectBody, requireText } from "./http.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -29,6 +29,10 @@ export function createApp() {
 
   app.get("/api/metrics/runtime", (_req, res) => {
     res.json(runtimeMetrics(runtime));
+  });
+
+  app.get("/api/metrics/scorecard", (_req, res) => {
+    res.json(operationalScorecard(runtime));
   });
 
   app.post("/api/runs", asyncRoute(async (req, res) => {

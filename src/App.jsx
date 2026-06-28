@@ -107,11 +107,13 @@ export default function App() {
             <span className={`status ${run.status}`}>{run.status}</span>
             <h2>{run.final.reason}</h2>
             <div className="quality-grid">
+              <Metric label="Readiness" value={run.final.quality.readinessScore} />
+              <Metric label="Validation %" value={run.final.quality.validationPassRate} />
               <Metric label="Grounded" value={String(run.final.quality.grounded)} />
               <Metric label="Approval" value={String(run.final.quality.approvalRequired)} />
               <Metric label="Writes" value={run.final.quality.externalWrites} />
-              <Metric label="Validated" value={run.final.quality.validatedTools} />
             </div>
+            {run.final.quality.riskSignals.length > 0 && <p className="muted">Risk signals: {run.final.quality.riskSignals.join(", ")}</p>}
           </div>
 
           <div className="panel">

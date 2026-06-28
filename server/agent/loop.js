@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { classifyRequest, validateToolOutput } from "./policies.js";
+import { classifyRequest, scoreRunReadiness, validateToolOutput } from "./policies.js";
 import { runTool } from "./tools.js";
 
 export async function runAgent(goal, options = {}) {
@@ -63,11 +63,15 @@ function finish(state, status, reason) {
   state.durationMs = Math.max(0, Date.parse(state.completedAt) - Date.parse(state.startedAt));
   const review = state.observations.find((item) => item.tool === "review.check")?.output;
   const handoff = state.observations.find((item) => item.tool === "handoff.draft")?.output;
+  const readiness = scoreRunReadiness(state);
   state.final = {
     status,
     reason,
     policy: state.policy,
     quality: {
+      readinessScore: readiness.score,
+      validationPassRate: readiness.validationPassRate,
+      riskSignals: readiness.riskSignals,
       grounded: Boolean(review?.grounded),
       approvalRequired: Boolean(review?.approvalRequired),
       dryRunOnly: state.mode === "dry-run",

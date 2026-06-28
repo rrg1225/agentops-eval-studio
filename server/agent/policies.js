@@ -44,3 +44,25 @@ export function validateToolOutput(toolName, output) {
   if (toolName === "handoff.draft") return Boolean(output?.summary && output?.owner);
   return false;
 }
+
+export function scoreRunReadiness(state) {
+  const validations = state.trace.filter((item) => item.phase === "validate");
+  const passedValidations = validations.filter((item) => item.ok).length;
+  const review = state.observations.find((item) => item.tool === "review.check")?.output;
+  const signalOutput = state.observations.find((item) => item.tool === "signals.inspect")?.output;
+  const riskSignals = signalOutput?.signals?.filter((signal) => signal.severity !== "low") || [];
+
+  let score = 45;
+  score += passedValidations * 8;
+  if (review?.grounded) score += 12;
+  if (review?.approvalRequired) score += 6;
+  if (state.mode === "dry-run") score += 10;
+  score -= riskSignals.length * 7;
+  if (state.policy?.level === "blocked") score = 0;
+
+  return {
+    score: Math.max(0, Math.min(100, score)),
+    riskSignals: riskSignals.map((signal) => signal.name),
+    validationPassRate: validations.length ? Math.round((passedValidations / validations.length) * 100) : 0
+  };
+}

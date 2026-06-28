@@ -28,6 +28,8 @@ test("runs a grounded dry-run agent workflow", async (t) => {
   assert.equal(body.status, "needs-approval");
   assert.equal(body.final.quality.dryRunOnly, true);
   assert.equal(body.final.quality.externalWrites, 0);
+  assert.ok(body.final.quality.readinessScore >= 80);
+  assert.equal(body.final.quality.validationPassRate, 100);
 });
 
 test("blocks unsafe requests before tool execution", async (t) => {
@@ -43,4 +45,15 @@ test("blocks unsafe requests before tool execution", async (t) => {
   const body = await run.json();
   assert.equal(body.status, "blocked");
   assert.equal(body.observations.length, 0);
+});
+
+test("exposes an operational scorecard", async (t) => {
+  const { server, baseUrl } = await startServer();
+  t.after(() => server.close());
+
+  const response = await fetch(`${baseUrl}/api/metrics/scorecard`);
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.grade, "A");
+  assert.ok(body.checks.some((check) => check.id === "error_budget"));
 });
